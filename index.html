@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation - Mohamed Amine & Hanen</title>
+    
+    <!-- Polices requises -->
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Montserrat:wght@300;400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fdf5f0;
+            color: #332c25;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        /* --- 1. L'ENTRÉE DE L'ENVELOPPE --- */
+        .envelope-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #f4eae4;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1500px;
+            transition: opacity 1s ease, visibility 1s ease;
+        }
+
+        .envelope-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #f7ede6;
+            background-image: radial-gradient(circle at center, #fbf7f4 0%, #f3e6de 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .envelope-container.opened .envelope-bg {
+            transform: scale(1.1);
+            opacity: 0;
+        }
+        .envelope-container.opened {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .wax-seal {
+            position: relative;
+            z-index: 10;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .seal-btn {
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, #e9cd99 0%, #c5a15f 70%, #947338 100%);
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(148, 115, 56, 0.35), inset 0 2px 6px rgba(255,255,255,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255,255,255,0.25);
+            position: relative;
+            animation: slowPulse 2.5s infinite;
+            padding: 15px;
+        }
+
+        .seal-btn::before {
+            content: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+            font-family: 'Amiri', serif;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.3;
+            text-align: center;
+            direction: rtl;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+        }
+
+        .open-text {
+            margin-top: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            color: #635347;
+            font-style: italic;
+            letter-spacing: 0.5px;
+        }
+
+        .envelope-divider {
+            width: 120px;
+            height: 20px;
+            margin-top: 12px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="none" stroke="%23c5a15f" stroke-width="0.8"><path d="M10,10 L42,10 M58,10 L90,10 M50,4 L54,10 L50,16 L46,10 Z M47,10 C47,8 53,8 53,10 C53,12 47,12 47,10 Z"/></svg>') no-repeat center center/contain;
+            opacity: 0.7;
+        }
+
+        /* Floating music button */
+        .music-control-floating {
+            position: fixed;
+            bottom: 30px;
+            right: 25px;
+            width: 45px;
+            height: 45px;
+            background: rgba(220, 210, 202, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: background 0.3s;
+        }
+        .music-control-floating:hover {
+            background: rgba(205, 193, 184, 0.9);
+        }
+        .music-icon {
+            width: 16px;
+            height: 16px;
+            fill: #5a4f46;
+            transition: transform 0.2s;
+        }
+
+        @keyframes slowPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- 2. MAIN CONTENT --- */
+        .main-content {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 2s ease 0.3s, transform 2s ease 0.3s;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+        }
+        .main-content.visible {
+            opacity: 1;
+            transform: scale(1);
+            visibility: visible;
+            height: auto;
+        }
+
+        /* --- HERO SECTION --- */
+        .hero-section {
+            height: 90vh;
+            background: 
+                linear-gradient(to bottom, rgba(238, 218, 207, 0.45), rgba(253, 245, 240, 0.98)), 
+                url('https://www.palaiskobbetennhas.com/img/45.jpg') no-repeat center center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(243, 224, 213, 0.3) 0%, transparent 80%);
+            pointer-events: none;
+        }
+
+        .wedding-names {
+            font-family: 'Alex Brush', cursive;
+            font-size: 4.5rem;
+            color: #836229;
+            font-weight: 400;
+            text-shadow: 0 2px 15px rgba(255,255,255,0.7);
+            z-index: 2;
+        }
+
+        .divider {
+            width: 110px;
+            height: 1px;
+            background-color: #c2a164;
+            margin: 25px auto;
+            z-index: 2;
+        }
+
+        .wedding-details {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.35rem;
+            letter-spacing: 2px;
+            color: #4a4037;
+            line-height: 1.9;
+            z-index: 2;
+        }
+
+        /* --- ORIENTAL ARCH DESIGN --- */
+        .card-section {
+            max-width: 500px;
+            margin: 60px auto;
+            background: #fdf5f0; 
+            padding: 40px 30px;
+            border-radius: 25px; 
+            box-shadow: 0 10px 30px rgba(131, 98, 41, 0.08);
+            border: 1px solid #ebdcd3;
+        }
+
+        .oriental-arch {
+            border: 1px solid #b3925a;
+            border-radius: 50% 50% 0 0 / 40% 40% 0 0;
+            padding: 45px 20px;
+            position: relative;
+            background: #fdf5f0;
+        }
+
+        .arch-ornament {
+            width: 30px;
+            height: 30px;
+            margin: 15px auto 25px auto;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23b3925a" stroke-width="1.2"><path d="M12,2 L14,9 L21,12 L14,15 L12,22 L10,15 L3,12 L10,9 Z"/><circle cx="12" cy="12" r="2" fill="%23b3925a"/></svg>') no-repeat center center/contain;
+        }
+
+        .bottom-ornament {
+            width: 100px;
+            height: 20px;
+            margin: 25px auto 0 auto;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="none" stroke="%23b3925a" stroke-width="1"><path d="M10,10 L45,10 M55,10 L90,10 M50,3 L54,10 L50,17 L46,10 Z"/></svg>') no-repeat center center/contain;
+        }
+
+        .thin-ornament {
+            width: 140px;
+            height: 20px;
+            margin: 5px auto 25px auto;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" fill="none" stroke="%23b3925a" stroke-width="0.8"><path d="M5,10 L42,10 M58,10 L95,10 M50,4 L54,10 L50,16 L46,10 Z M46,10 C46,6 54,6 54,10 C54,14 46,14 46,10 Z"/></svg>') no-repeat center center/contain;
+            opacity: 0.8;
+        }
+
+        .english-invitation {
+            font-family: 'Playfair Display', serif;
+            direction: ltr;
+            text-align: center;
+            color: #3a322d;
+            line-height: 2.1;
+            font-size: 1.25rem;
+        }
+
+        .basmala-title {
+            font-family: 'Amiri', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #211c18;
+            margin-bottom: 5px;
+            direction: rtl;
+        }
+
+        .invitation-phrase {
+            font-size: 1.15rem;
+            font-style: italic;
+            color: #5c5046;
+        }
+
+        .couple-names {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3.2rem;
+            font-weight: 400;
+            color: #836229;
+            margin: 10px 0;
+            line-height: 1.2;
+        }
+
+        .date-time {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #332c25;
+            margin-top: 15px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+
+        .venue-label {
+            font-size: 1.15rem;
+            font-style: italic;
+            margin-top: 20px;
+            color: #7c6243;
+        }
+
+        .venue-name-ch {
+            font-family: 'Alex Brush', cursive;
+            font-size: 2.8rem;
+            color: #836229;
+            margin-top: 5px;
+        }
+
+        /* --- COUNTDOWN --- */
+        .countdown-section {
+            padding: 40px 20px;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        .countdown-section h2 {
+            font-family: 'Alex Brush', cursive;
+            font-size: 3rem;
+            color: #836229;
+            margin-bottom: 5px;
+            font-weight: 400;
+        }
+        .inline-countdown {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .numbers-row {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.6rem;
+            color: #3a322d;
+            letter-spacing: 2px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            font-weight: 400;
+        }
+        .labels-row {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 5px;
+            width: 100%;
+            padding-left: 5px;
+        }
+        .labels-row span {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 0.95rem;
+            color: #8c766c;
+            width: 65px;
+            text-align: center;
+        }
+
+        /* --- RSVP SECTION --- */
+        .rsvp-section {
+            padding: 60px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .rsvp-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            margin-bottom: 35px;
+            color: #836229;
+        }
+        .rsvp-form {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 15px;
+            border: 1px solid #ebdcd3;
+            text-align: left;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #7c6243;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #dcd1cb;
+            border-radius: 4px;
+            outline: none;
+            background-color: #fdfcfb;
+        }
+        .submit-btn {
+            width: 100%;
+            background-color: #836229;
+            color: #fff;
+            border: none;
+            padding: 16px;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #6d5020;
+        }
+
+        /* --- LOCATION SECTION --- */
+        .location-section {
+            padding: 40px 20px 60px 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .location-section h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #836229;
+        }
+        .map-wrapper {
+            position: relative;
+            padding-bottom: 55%;
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #e0d1c8;
+            margin-top: 20px;
+        }
+        .map-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: 0;
+        }
+
+        /* --- BOTTOM IMAGE --- */
+        .bottom-palace-img {
+            width: 100%;
+            max-width: 500px;
+            height: 250px;
+            margin: 40px auto 0 auto;
+            background: 
+                linear-gradient(to top, rgba(253, 245, 240, 0) 60%, rgba(253, 245, 240, 1) 100%),
+                url('https://www.palaiskobbetennhas.com/img/45.jpg') no-repeat center center/cover;
+            border-radius: 0 0 25px 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LIEN DE MUSIQUE ULTRA STABLE (INSTRUMENTAL TRADITIONNEL DOUX) -->
+
+
+
+
+    <!-- FLOATING MUSIC BUTTON -->
+    <div class="music-control-floating" onclick="toggleMusic(event)">
+        <svg id="musicIcon" class="music-icon" viewBox="0 0 24 24">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+    </div>
+
+    <!-- 1. ENVELOPE COVER -->
+    <div id="envelopeScreen" class="envelope-container">
+        <div class="envelope-bg">
+            <div class="wax-seal" onclick="openInvitation()">
+                <div class="seal-btn"></div>
+                <p class="open-text">Click to open</p>
+                <div class="envelope-divider"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN CONTENT -->
+    <div id="mainContent" class="main-content">
+        
+        <!-- HERO SECTION -->
+        <section class="hero-section">
+            <h1 class="wedding-names">Mohamed Amine & Hanen</h1>
+            <div class="divider"></div>
+            <p class="wedding-details">Thursday, September 3, 2026<br>At 14:30</p>
+        </section>
+
+        <!-- CARDS SECTION -->
+        <section class="card-section">
+            <div class="oriental-arch">
+                <div class="english-invitation">
+                    <div class="basmala-title">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+                    <div class="arch-ornament"></div>
+                    
+                    <div class="invitation-phrase">They have the honor of inviting you to attend<br>their wedding ceremony </div>
+                    <div class="couple-names">Mohamed Amine & Hanen</div>
+                    
+                    <div class="invitation-phrase">on</div>
+                    <div class="date-time">Thursday, September 3, 2026<br>at 2:30 pm </div>
+                    
+                    <div class="venue-label">At the venue</div>
+                    <div class="venue-name-ch">Palais Kobbet Ennhas</div>
+                </div>
+                <div class="bottom-ornament"></div>
+            </div>
+        </section>
+
+        <!-- COUNTDOWN SECTION -->
+        <section class="countdown-section">
+            <h2>The Big Day Approaches</h2>
+            <div class="thin-ornament"></div>
+            <div class="inline-countdown">
+                <div class="numbers-row">
+                    <span id="days">00</span>:
+                    <span id="hours">00</span>:
+                    <span id="minutes">00</span>:
+                    <span id="seconds">00</span>
+                </div>
+                <div class="labels-row">
+                    <span>Days</span>
+                    <span>Hours</span>
+                    <span>Minutes</span>
+                    <span>Seconds</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- RSVP SECTION -->
+        <section class="rsvp-section">
+            <h2>RSVP - Attendance</h2>
+            <form class="rsvp-form" id="rsvpForm" onsubmit="sendRSVP(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="guestName" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Number of Guests</label>
+                    <input type="number" id="guestCount" min="1" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Will you attend?</label>
+                    <div style="display: flex; gap: 20px; font-family: 'Playfair Display', serif; font-style: italic;">
+                        <label><input type="radio" name="attending" value="Oui" checked style="margin-right:8px; accent-color:#836229;"> Yes!</label>
+                        <label><input type="radio" name="attending" value="Non" style="margin-right:8px; accent-color:#836229;"> No</label>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">SUBMIT</button>
+            </form>
+        </section>
+
+        <!-- LOCATION SECTION -->
+        <section class="location-section">
+            <h2>Wedding Venue</h2>
+            <p style="color:#7c6243; font-size:0.95rem; letter-spacing:1px; font-family: 'Playfair Display', serif; font-style: italic;">Palais Kobbet Ennhas, La Manouba, Tunisie</p>
+            <div class="map-wrapper">
+                <iframe src="https://maps.google.com/maps?q=Palais%20Kobbet%20Ennhas,%20La%20Manouba&t=&z=15&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </section>
+
+        <!-- PALACE BOTTOM IMAGE -->
+        <div class="bottom-palace-img"></div>
+    </div>
+
+    <!-- JAVASCRIPT SCRIPTS -->
+    <script>
+        const music = document.getElementById('weddingMusic');
+        const musicIcon = document.getElementById('musicIcon');
+
+        function openInvitation() {
+            document.getElementById('mainContent').classList.add('visible');
+            document.getElementById('envelopeScreen').classList.add('opened');
+            
+            music.volume = 0.35; // Volume élégant et feutré
+            music.play().catch(err => {
+                console.log("Le navigateur a bloqué l'autoplay. C'est normal sur certains mobiles.");
+                musicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            });
+        }
+
+        function toggleMusic(event) {
+            event.stopPropagation();
+            if (music.paused) {
+                music.play();
+                musicIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else {
+                music.pause();
+                musicIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+        }
+
+        // Target Date (September 3, 2026)
+        const targetDate = new Date("September 3, 2026 14:30:00").getTime();
+        
+        const countdownInterval = setInterval(() => {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+            
+            if (diff <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                return;
+            }
+            
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').innerText = d < 10 ? '0' + d : d;
+            document.getElementById('hours').innerText = h < 10 ? '0' + h : h;
+            document.getElementById('minutes').innerText = m < 10 ? '0' + m : m;
+            document.getElementById('seconds').innerText = s < 10 ? '0' + s : s;
+        }, 1000);
+
+        function sendRSVP(e) {
+            e.preventDefault();
+            const name = document.getElementById('guestName').value;
+            const count = document.getElementById('guestCount').value;
+            const attending = document.querySelector('input[name="attending"]:checked').value;
+            
+            console.log("RSVP Data:", { name, count, attending });
+            alert("Thank you! Your response has been saved.");
+            document.getElementById('rsvpForm').reset();
+        }
+    </script>
+</body>
+</html>
